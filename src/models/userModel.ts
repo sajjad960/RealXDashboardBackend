@@ -26,7 +26,7 @@ const User = sequelize.define('users', {
     allowNull: false,
     defaultValue: 'user'
   },
-  active: {
+  status: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1
@@ -42,7 +42,7 @@ const User = sequelize.define('users', {
 }, {
   sequelize,
   tableName: 'users',
-  timestamps: true,
+  timestamps: false,
   indexes: [
     {
       name: "PRIMARY",

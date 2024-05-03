@@ -18,7 +18,7 @@ const getUser = (req: any, res: Response, next: NextFunction) => {
       );
     }
 
-    const dataFunction = factory.getOne(User, ["password"]);
+    const dataFunction = factory.getOne(User, ["password", "passwordResetExpires", "passwordResetToken", "role"]);
     return dataFunction(req, res, next)
 };
 

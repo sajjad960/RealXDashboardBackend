@@ -9,8 +9,9 @@ type userDetails = {
   id: number;
   name: string;
   password: string;
-  passwordResetExpires: any;
-  passwordResetToken: any;
+  passwordResetExpires: Date;
+  passwordResetToken: string;
+  role: string;
 };
 interface AuthenticatedRequest extends Request {
   user: {
@@ -44,6 +45,7 @@ const createSendToken = (
   (user.password = undefined),
     (user.passwordResetExpires = undefined),
     (user.passwordResetToken = undefined);
+    user.role = undefined
 
   res.status(statusCode).json({
     status: "success",
@@ -54,15 +56,13 @@ const createSendToken = (
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, email, address, username, password } = req.body;
+    const { name, email, password } = req.body;
 
     const hasedPassword = await bcrypt.hash(password, 12);
 
     const body = {
       name,
       email,
-      address,
-      username,
       password: hasedPassword,
     };
     // create user

@@ -22,7 +22,6 @@ const userValidationRules = () => {
       .trim()
       .isLength({ min: 2 })
       .withMessage("Name must be at least 2 characters long"),
-    body("userName").trim().notEmpty().withMessage("Username cannot be empty"),
     body("email")
       .trim()
       .isEmail()

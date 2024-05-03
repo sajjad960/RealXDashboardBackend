@@ -1,5 +1,5 @@
 import express from "express";
-import postController from "../controllers/postController";
+import postController from "../controllers/productController";
 import upload from "../middleware/upload";
 import authController from "../controllers/authController";
 

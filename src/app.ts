@@ -8,7 +8,7 @@ import cors from "cors";
 import AppError from "./utils/AppError";
 import globalErrorHandler from "./controllers/errorController";
 import userRouter from "./routes/userRoutes";
-import postRouter from "./routes/postRoutes";
+import postRouter from "./routes/productRoutes";
 
 // cors security
 app.use(
