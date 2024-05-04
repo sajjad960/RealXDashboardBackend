@@ -8,7 +8,7 @@ import cors from "cors";
 import AppError from "./utils/AppError";
 import globalErrorHandler from "./controllers/errorController";
 import userRouter from "./routes/userRoutes";
-import postRouter from "./routes/productRoutes";
+import productRouter from "./routes/productRoutes";
 
 // cors security
 app.use(
@@ -33,7 +33,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 const prefix = "/api/v1";
 
 app.use(`${prefix}/users`, userRouter);
-app.use(`${prefix}/posts`, postRouter);
+app.use(`${prefix}/products`, productRouter);
 
 
 //If app not found any api route
