@@ -6,7 +6,8 @@ const Product = sequelize.define('products', {
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
-    primaryKey: true
+    primaryKey: true,
+    autoIncrement: true,
   },
   name: {
     type: DataTypes.STRING(255),
@@ -40,7 +41,7 @@ const Product = sequelize.define('products', {
 }, {
   sequelize,
   tableName: 'products',
-  timestamps: true,
+  timestamps: false,
   indexes: [
     {
       name: "PRIMARY",

@@ -3,21 +3,26 @@ const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
 
 const s3 = new aws.S3({
-  accessKeyId: 'AKIA3FH427AVDCOGIFB2',
-  secretAccessKey: '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',
-  region: 'ap-southeast-1'
+  accessKeyId: process.env.ACCESSKEYID,
+  secretAccessKey: process.env.SECRETACCESSKEY,
+  region: process.env.REGION
 });
 
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'sajjad-test-bucket',
+    bucket: process.env.BUCKETNAME,
     acl: 'public-read', // or 'private' if you want the files to be private
     metadata: function (req, file, cb) {
       cb(null, {fieldName: file.fieldname});
     },
     key: function (req, file, cb) {
-      cb(null, Date.now().toString() + '-' + file.originalname);
+      // Check file type and assign folder path accordingly
+      if (file.fieldname === "poster") {
+        cb(null, "public/posters/" + Date.now().toString() + '-' + file.originalname);
+      } else {
+        cb(null, "public/models/" + Date.now().toString() + '-' + file.originalname);
+      }
     }
   })
 }).fields([

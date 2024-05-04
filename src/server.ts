@@ -11,6 +11,10 @@ declare var process: {
     DB_PASSWORD: string;
     DB_HOST: string;
     JWT_SECRET: string;
+    ACCESSKEYID: string;
+    SECRETACCESSKEY: string;
+    REGION: string;
+    BUCKETNAME: string;
   };
 };
 
