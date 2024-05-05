@@ -102,6 +102,9 @@ const updateProduct = catchAsync(
         posterFileName: req.files["poster"]?.[0].key ?? null,
       };
     }
+
+    // set details to the product
+    console.log(product);
     console.log(fileUpdatedLinks, posterUpdatedLinks);
     res.send("file uploaded");
   }
@@ -117,7 +120,15 @@ const getAllProducts = catchAsync(
     req.query.user_id = req.user.id;
     req.query.status = { [Op.ne]: 4 };
     // get associate data
-    //   req.query.include = [{ model: Counter, as: "commentReactions" }, {model: User, as: "userDetailsComment", attributes: ['id', 'name']}];
+    req.query.include = [
+      {
+        model: ProductLog,
+        as: "product_log_details",
+        attributes: {
+          exclude: ["product_id",],
+        },
+      },
+    ];
 
     // Check If PostId Valid.
     //   const isPostExist = await Post.findOne({

@@ -44,7 +44,6 @@ const ProductLog = sequelize.define('products_logs', {
   ]
 });
 
-ProductLog.belongsTo(Product, {foreignKey: "product_id", as: "product_details"})
-Product.hasOne(ProductLog, {foreignKey: "product_id", as: "product_details"})
+
 
 export = ProductLog;

@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../instances/sequelize";
 import User from "./userModel";
+import ProductLog from "./productLogModel";
 
 const Product = sequelize.define('products', {
   id: {
@@ -62,6 +63,9 @@ const Product = sequelize.define('products', {
 });
 
 Product.belongsTo(User, {foreignKey: "user_id", as: "product_user_details"})
-User.hasMany(Product, {foreignKey: "user_id", as: "userDetailsPrproduct_user_detailsoduct"})
+User.hasMany(Product, {foreignKey: "user_id", as: "product_user_details"})
+
+Product.hasOne(ProductLog, {foreignKey: "product_id", as: "product_log_details"})
+ProductLog.belongsTo(Product, {foreignKey: "product_id", as: "product_log_details"})
 
 export = Product;
