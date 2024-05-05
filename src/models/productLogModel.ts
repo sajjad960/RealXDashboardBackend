@@ -24,7 +24,7 @@ const ProductLog = sequelize.define('products_logs', {
 }, {
   sequelize,
   tableName: 'products_logs',
-  timestamps: true,
+  timestamps: false,
   indexes: [
     {
       name: "PRIMARY",

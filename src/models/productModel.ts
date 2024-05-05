@@ -13,9 +13,9 @@ const Product = sequelize.define('products', {
     type: DataTypes.STRING(255),
     allowNull: true
   },
-  sku: {
+  url: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   models: {
     type: DataTypes.TEXT,

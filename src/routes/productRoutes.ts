@@ -2,15 +2,21 @@ import express from "express";
 import upload from "../middleware/upload";
 import authController from "../controllers/authController";
 import productController from "../controllers/productController";
-import validateUser from "../middleware/validateUser";
+import validateProductUpload from "../middleware/validateProductUpload";
 
 const router = express.Router();
 
-// router.route("/uploads/:id/:imagename").get(postController.getUploadImages);
+router.route("/public-product/:user_id/:url").get(productController.getProduct);
 
 router.use(authController.protect);
-router.route("/").post(validateUser, upload, productController.createProduct).get(productController.getAllProducts);
-router.route("/:id").delete(productController.deleteProduct)
+router
+  .route("/")
+  .post(validateProductUpload, upload, productController.createProduct)
+  .get(productController.getAllProducts);
+
+router.route("/update").post(upload, productController.updateProduct);
+
+router.route("/:id").delete(productController.deleteProduct);
 
 //Declare router as a userRouter
 const productRouter = router;
