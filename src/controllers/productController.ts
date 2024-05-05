@@ -9,12 +9,14 @@ import ProductLog from "../models/productLogModel";
 
 const createProduct = catchAsync(
   async (req: any, res: Response, next: NextFunction) => {
-    const { name, sku } = req.body;
+    const { name } = req.body;
     const user_id = req.user.id;
+    const url = req.query.url;
 
     const user = await User.findOne({
       where: {
         id: user_id,
+        status: 1,
       },
       attributes: ["id", "name"],
     });
@@ -41,7 +43,7 @@ const createProduct = catchAsync(
     };
     const doc = await Product.create({
       name,
-      sku,
+      url,
       user_id,
       models: JSON.stringify(fileLinks),
       poster: JSON.stringify(posterLink),
@@ -61,10 +63,17 @@ const createProduct = catchAsync(
 
 const updateProduct = catchAsync(
   async (req: any, res: Response, next: NextFunction) => {
-    const { product_id } = req.body;
+    const { product_id, name } = req.body;
+    const url = req.query.url
     const product = await Product.findOne({
       where: { id: product_id, user_id: req.user.id },
     });
+    if (!product) {
+      return next(new AppError("Product Not Found", 404));
+    }
+
+    // if need to update url then check url already available or not.
+    
     // const fileLinks = [
     //   {
     //     usdzFile: {
@@ -81,32 +90,59 @@ const updateProduct = catchAsync(
     //   posterFileLink: req.files["poster"]?.[0].location ?? null,
     //   posterFileName: req.files["poster"]?.[0].key ?? null,
     // };
-    const fileUpdatedLinks: any = [{}];
-    let posterUpdatedLinks;
+
+    //New Updated Link
+    const fileNewLinks: any = [{}];
+    let posterNewLinks = null;
 
     if (req.files["usdzFile"]) {
-      fileUpdatedLinks[0].usdzFile = {
+      fileNewLinks[0].usdzFile = {
         usdzFileLink: req.files["usdzFile"]?.[0].location ?? null,
         usdzFileName: req.files["usdzFile"]?.[0].key ?? null,
       };
     } else if (req.files["glbFile"]) {
-      fileUpdatedLinks[0].glbFile = {
+      fileNewLinks[0].glbFile = {
         glbFileLink: req.files["glbFile"]?.[0].location ?? null,
         glbFileName: req.files["glbFile"]?.[0].key ?? null,
       };
     }
 
     if (req.files["poster"]) {
-      posterUpdatedLinks = {
+      posterNewLinks = {
         posterFileLink: req.files["poster"]?.[0].location ?? null,
         posterFileName: req.files["poster"]?.[0].key ?? null,
       };
     }
 
-    // set details to the product
-    console.log(product);
-    console.log(fileUpdatedLinks, posterUpdatedLinks);
-    res.send("file uploaded");
+    // Old Product Models Link
+    const fileOldLinks = JSON.parse(product.models);
+
+    // Update Old Links With New Links
+    fileNewLinks.forEach((link1) => {
+      Object.keys(link1).forEach((key) => {
+        fileOldLinks[0][key] = link1[key];
+      });
+    });
+    // Update New Link To The Product
+    if (Object.keys(fileNewLinks[0]).length !== 0) {
+      product.models = JSON.stringify(fileOldLinks);
+    }
+    if (posterNewLinks) {
+      product.poster = JSON.stringify(posterNewLinks);
+    }
+    if (url) {
+      product.url = url;
+    }
+    if (name) {
+      product.name = name;
+    }
+    // Save the Product
+    await product.save();
+
+    res.status(200).json({
+      status: "success",
+      message: "Product has been updated",
+    });
   }
 );
 
@@ -125,7 +161,7 @@ const getAllProducts = catchAsync(
         model: ProductLog,
         as: "product_log_details",
         attributes: {
-          exclude: ["product_id",],
+          exclude: ["product_id"],
         },
       },
     ];

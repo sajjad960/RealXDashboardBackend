@@ -7,7 +7,7 @@ import Product from "../models/productModel";
 const validateProductUpload = catchAsync(
   async (req: any, res: Response, next: NextFunction) => {
     const user_id = req.user.id;
-    // const sku = req.body.sku
+    const url = req.query.url;
     //validate user
     const user = await User.findOne({
       where: {
@@ -21,16 +21,18 @@ const validateProductUpload = catchAsync(
       return next(new AppError("User Not Found", 404));
     }
     // validate product sku
-    // const product = await Product.findOne({
-    //   where: {
-    //     sku,
-    //     user_id
-    //   }
-    // })
+    if (url) {
+      const product = await Product.findOne({
+        where: {
+          url,
+          user_id,
+        },
+      });
 
-    // if(product){
-    //   return next(new AppError("Sku needs to be unique", 400));
-    // }
+      if (product) {
+        return next(new AppError("Url needs to be unique", 400));
+      }
+    }
 
     next();
   }
