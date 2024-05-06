@@ -6,6 +6,7 @@ import AppError from "../utils/AppError";
 import factory from "./handleFactory";
 import { Op, Sequelize, where } from "sequelize";
 import ProductLog from "../models/productLogModel";
+import sequelize from "sequelize";
 
 const createProduct = catchAsync(
   async (req: any, res: Response, next: NextFunction) => {
@@ -64,32 +65,13 @@ const createProduct = catchAsync(
 const updateProduct = catchAsync(
   async (req: any, res: Response, next: NextFunction) => {
     const { product_id, name } = req.body;
-    const url = req.query.url
+    const url = req.query.url;
     const product = await Product.findOne({
       where: { id: product_id, user_id: req.user.id },
     });
     if (!product) {
       return next(new AppError("Product Not Found", 404));
     }
-
-    // if need to update url then check url already available or not.
-    
-    // const fileLinks = [
-    //   {
-    //     usdzFile: {
-    //       usdzFileLink: req.files["usdzFile"]?.[0].location ?? null,
-    //       usdzFileName: req.files["usdzFile"]?.[0].key ?? null,
-    //     },
-    //     glbFile: {
-    //       glbFileLink: req.files["glbFile"]?.[0].location ?? null,
-    //       glbFileName: req.files["glbFile"]?.[0].key ?? null,
-    //     },
-    //   },
-    // ];
-    // const posterLink = {
-    //   posterFileLink: req.files["poster"]?.[0].location ?? null,
-    //   posterFileName: req.files["poster"]?.[0].key ?? null,
-    // };
 
     //New Updated Link
     const fileNewLinks: any = [{}];
@@ -147,7 +129,55 @@ const updateProduct = catchAsync(
 );
 
 const getDashBoardProductDetails = catchAsync(
-  async (req: any, res: Response, next: NextFunction) => {}
+  async (req: any, res: Response, next: NextFunction) => {
+    const user_id = req.user.id;
+
+    const top5ProductQuery = ProductLog.findAll({
+      attributes: ["product_views"],
+      include: [
+        {
+          model: Product,
+          required: true,
+          where: { user_id }, // Filter by user_id = 5
+          attributes: ["id", "name", "url", "poster"],
+          as: "product_log_details",
+        },
+      ],
+      order: [["product_views", "DESC"]],
+      limit: 5,
+    });
+
+    // Total Active Products
+    const activeProductQuery = Product.count({
+      where: {
+        status: 1,
+        user_id,
+      },
+    });
+    // Total products
+    const totalProductsQuery = Product.count({
+      where: {
+        user_id,
+        status: {
+          [Op.ne]: 4,
+        },
+      },
+    });
+
+    const [topProducts, activeProductCount, totalProductsCount] =
+      await Promise.all([
+        top5ProductQuery,
+        activeProductQuery,
+        totalProductsQuery,
+      ]);
+
+    res.status(200).json({
+      status: "success",
+      topProducts,
+      activeProductCount,
+      totalProductsCount,
+    });
+  }
 );
 
 const getAllProducts = catchAsync(
@@ -226,6 +256,10 @@ const getProduct = catchAsync(
       attributes: { exclude: ["status", "user_id"] },
     });
 
+    if (!product) {
+      return next(new AppError("Product Not Found", 404));
+    }
+
     //add  view count to the log model
     const ifLogIsAlreadyCreated = await ProductLog.findOne({
       where: {
@@ -264,5 +298,6 @@ const productController = {
   deleteProduct,
   updateProduct,
   getProduct,
+  getDashBoardProductDetails,
 };
 export = productController;

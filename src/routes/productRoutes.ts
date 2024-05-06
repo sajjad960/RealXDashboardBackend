@@ -14,6 +14,8 @@ router
   .post(validateProductUpload, upload, productController.createProduct)
   .get(productController.getAllProducts);
 
+router.route("/dashboard-details").get(productController.getDashBoardProductDetails)
+
 router.route("/update").post(validateProductUpload, upload, productController.updateProduct);
 
 router.route("/:id").delete(productController.deleteProduct);
