@@ -8,6 +8,7 @@ const validateProductUpload = catchAsync(
   async (req: any, res: Response, next: NextFunction) => {
     const user_id = req.user.id;
     const url = req.query.url;
+    const routeUrl = req.route.path;
     //validate user
     const user = await User.findOne({
       where: {
@@ -20,7 +21,11 @@ const validateProductUpload = catchAsync(
     if (!user) {
       return next(new AppError("User Not Found", 404));
     }
-    // validate product sku
+    // validate product url
+    if(url.trim() === "" && routeUrl !== "/update") {
+      return next(new AppError("URL cannot be empty", 400));
+
+    }
     if (url) {
       const product = await Product.findOne({
         where: {

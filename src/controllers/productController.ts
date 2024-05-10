@@ -10,7 +10,7 @@ import sequelize from "sequelize";
 
 const createProduct = catchAsync(
   async (req: any, res: Response, next: NextFunction) => {
-    const { name } = req.body;
+    const { name, model_placement } = req.body;
     const user_id = req.user.id;
     const url = req.query.url;
 
@@ -46,6 +46,7 @@ const createProduct = catchAsync(
       name,
       url,
       user_id,
+      model_placement,
       models: JSON.stringify(fileLinks),
       poster: JSON.stringify(posterLink),
     });
@@ -64,7 +65,7 @@ const createProduct = catchAsync(
 
 const updateProduct = catchAsync(
   async (req: any, res: Response, next: NextFunction) => {
-    const { product_id, name } = req.body;
+    const { product_id, name, model_placement, status } = req.body;
     const url = req.query.url;
     const product = await Product.findOne({
       where: { id: product_id, user_id: req.user.id },
@@ -118,12 +119,22 @@ const updateProduct = catchAsync(
     if (name) {
       product.name = name;
     }
+    if (model_placement) {
+      product.model_placement = model_placement;
+    }
+    if (model_placement) {
+      product.model_placement = model_placement;
+    }
+    if(status) {
+      product.status = status
+    }
     // Save the Product
-    await product.save();
+    const updatedProduct = await product.save();
 
     res.status(200).json({
       status: "success",
       message: "Product has been updated",
+      product: updatedProduct
     });
   }
 );

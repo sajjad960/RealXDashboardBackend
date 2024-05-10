@@ -18,9 +18,14 @@ const Product = sequelize.define('products', {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
+  model_placement: {
+    type: DataTypes.STRING(45),
+    allowNull: false,
+  },
   models: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
+    defaultValue: "floor"
   },
   poster: {
     type: DataTypes.TEXT,

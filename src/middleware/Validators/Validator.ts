@@ -29,7 +29,16 @@ const userValidationRules = () => {
     body("password").trim().notEmpty().withMessage("Password cannot be empty"),
   ];
 };
+const productValidationRules = () => {
+  return [
+    body("name")
+      .trim().notEmpty()
+      .isLength({ min: 2 })
+      .withMessage("Name must be at least 2 characters long"),
+    body("url").trim().notEmpty().withMessage("Please enter a valid url"),
+  ];
+};
 
-const Validator = { userValidationRules, validate };
+const Validator = { userValidationRules, validate, productValidationRules };
 
 export = Validator;
