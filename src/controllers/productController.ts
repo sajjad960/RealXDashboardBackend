@@ -125,8 +125,8 @@ const updateProduct = catchAsync(
     if (model_placement) {
       product.model_placement = model_placement;
     }
-    if(status) {
-      product.status = status
+    if (status) {
+      product.status = status;
     }
     // Save the Product
     const updatedProduct = await product.save();
@@ -134,7 +134,7 @@ const updateProduct = catchAsync(
     res.status(200).json({
       status: "success",
       message: "Product has been updated",
-      product: updatedProduct
+      product: updatedProduct,
     });
   }
 );
@@ -196,6 +196,13 @@ const getAllProducts = catchAsync(
     // add filter
     req.query.user_id = req.user.id;
     req.query.status = { [Op.ne]: 4 };
+    if (req.query.name) {
+      req.query.name = sequelize.where(
+        sequelize.fn("UPPER", sequelize.col("name")),
+        "LIKE",
+        `%${req.query.name.toUpperCase()}%`
+      );
+    }
     // get associate data
     req.query.include = [
       {
@@ -206,16 +213,6 @@ const getAllProducts = catchAsync(
         },
       },
     ];
-
-    // Check If PostId Valid.
-    //   const isPostExist = await Post.findOne({
-    //     where: {
-    //       id: post_id,
-    //     },
-    //   });
-    //   if (!isPostExist) {
-    //     return next(new AppError("Post Not Found", 404));
-    //   }
 
     factory.getAll(Product)(req, res, next);
   }
