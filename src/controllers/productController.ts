@@ -196,7 +196,7 @@ const getAllProducts = catchAsync(
     // add filter
     req.query.user_id = req.user.id;
     req.query.status = { [Op.ne]: 4 };
-    if (req.query.name) {
+    if (req.query.name && req.query.name.trim() !== "") {
       req.query.name = sequelize.where(
         sequelize.fn("UPPER", sequelize.col("name")),
         "LIKE",
